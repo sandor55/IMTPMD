@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_p1"
+            android:title="periode 1" />
+        <item
+            android:id="@+id/nav_p2"
+            android:title="periode 2" />
+        <item
+            android:id="@+id/nav_p3"
+            android:title="periode 3" />
+        <item
+            android:id="@+id/nav_p4"
+            android:title="periode 4" />
+        <item
+            android:id="@+id/nav_BSA"
+            android:title="BSA advies" />
+
+
+    </group>
+
+</menu>

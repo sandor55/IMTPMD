@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Barometer</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="action_p1">periode 1</string>
+    <string name="action_p2">periode 2</string>
+    <string name="action_p3">periode 3</string>
+    <string name="action_p4">periode 4</string>
+    <string name="action_BSA">BSA advies</string>
+</resources>
