@@ -10,13 +10,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Wendy on 22-3-2016.
  */
 public class Invoer extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    
+
+    private ListView mListView;
+    private com.imtpmd.sandor.imtpmdws.VakListAdapter mAdapter;
+    private List<Course> courseModels = new ArrayList<>();    // NEED A METHOD TO FILL THIS. RETRIEVE THE DATA FROM JSON
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +34,21 @@ public class Invoer extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
+        mListView = (ListView) findViewById(R.id.showVakken);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                             @Override
+                                             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                                                 startActivity(new Intent(Invoer.this, VakInfo.class));
+                                             }
+                                         }
+        );
+        courseModels.add(new Course("IKPMD", "3", "10", "2"));             // DUMMY DATA
+        courseModels.add(new Course("IPMT2", "6", "10", "2"));             // DUMMY DATA
+        courseModels.add(new Course("IPROMED", "8", "10", "2"));             // DUMMY DATA
+        mAdapter = new com.imtpmd.sandor.imtpmdws.VakListAdapter(Invoer.this, 0, courseModels);
+        mListView.setAdapter(mAdapter);
+        //drawer
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
