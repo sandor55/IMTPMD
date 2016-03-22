@@ -16,6 +16,7 @@ import android.view.MenuItem;
  */
 public class Invoer extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
