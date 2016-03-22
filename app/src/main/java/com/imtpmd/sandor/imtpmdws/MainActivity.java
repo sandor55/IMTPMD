@@ -75,16 +75,13 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_p1) {
-            // Handle the camera action
+            startActivity(new Intent(this, MainActivity.class));
+
         } else if (id == R.id.nav_p2) {
-            startActivity(new Intent(MainActivity.this, ShowVakken.class));
+            startActivity(new Intent(this, Invoer.class));
 
         } else if (id == R.id.nav_p3) {
-
-        } else if (id == R.id.nav_p4) {
-
-        } else if (id == R.id.nav_BSA) {
-
+            startActivity(new Intent(this, Overzicht.class));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

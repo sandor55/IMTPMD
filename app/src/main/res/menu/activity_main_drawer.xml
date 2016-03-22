@@ -4,19 +4,13 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_p1"
-            android:title="periode 1" />
+            android:title="Home" />
         <item
             android:id="@+id/nav_p2"
-            android:title="periode 2" />
+            android:title="Invoer" />
         <item
             android:id="@+id/nav_p3"
-            android:title="periode 3" />
-        <item
-            android:id="@+id/nav_p4"
-            android:title="periode 4" />
-        <item
-            android:id="@+id/nav_BSA"
-            android:title="BSA advies" />
+            android:title="Overzicht" />
 
 
     </group>
