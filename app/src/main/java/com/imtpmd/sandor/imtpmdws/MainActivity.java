@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_p1) {
             startActivity(new Intent(this, MainActivity.class));
+            finish();
 
         } else if (id == R.id.nav_p2) {
             startActivity(new Intent(this, Invoer.class));
