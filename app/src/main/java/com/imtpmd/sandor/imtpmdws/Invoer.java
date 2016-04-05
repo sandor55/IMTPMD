@@ -1,5 +1,6 @@
 package com.imtpmd.sandor.imtpmdws;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -8,11 +9,25 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
+import com.imtpmd.sandor.imtpmdws.Models.Course;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +37,22 @@ import java.util.List;
  */
 public class Invoer extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private ProgressDialog pDialog;
 
+    RequestQueue requestQueue;
     private ListView mListView;
     private com.imtpmd.sandor.imtpmdws.VakListAdapter mAdapter;
     private List<Course> courseModels = new ArrayList<>();    // NEED A METHOD TO FILL THIS. RETRIEVE THE DATA FROM JSON
+
+
+    //taggs voor easy gebruik
+    private String url = "http://www.fuujokan.nl/subject_lijst.json";
+    private static String TAG = Invoer.class.getSimpleName();
+    private static final String TAG_VAKNAAM = "name";
+    private static final String TAG_ECTS = "ects";
+    private static final String TAG_GRADE = "grade";
+    private static final String TAG_PERIOD = "period";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,21 +61,6 @@ public class Invoer extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-        mListView = (ListView) findViewById(R.id.showVakken);
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                             @Override
-                                             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                                                 startActivity(new Intent(Invoer.this, VakInfo.class));
-                                             }
-                                         }
-        );
-        courseModels.add(new Course("IKPMD", "3", "10", "2"));             // DUMMY DATA
-        courseModels.add(new Course("IPMT2", "6", "10", "2"));             // DUMMY DATA
-        courseModels.add(new Course("IPROMED", "8", "10", "2"));             // DUMMY DATA
-        mAdapter = new com.imtpmd.sandor.imtpmdws.VakListAdapter(Invoer.this, 0, courseModels);
-        mListView.setAdapter(mAdapter);
-        //drawer
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -57,7 +69,114 @@ public class Invoer extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+        //dialog tijdens het ophalen van de data
+        pDialog = new ProgressDialog(this);
+        pDialog.setMessage("Please wait...");
+        pDialog.setCancelable(false);
+
+//        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                                             @Override
+//                                             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+//                                                 startActivity(new Intent(Invoer.this, VakInfo.class));
+//                                             }
+//                                         }
+//        );
+      //  courseModels.add(new Course("vak", "3", "3", "1"));
+
+        makeJsonArrayRequest();
+        requestQueue = Volley.newRequestQueue(getApplicationContext());
+
+
+
     }
+
+
+    private void makeJsonArrayRequest()
+    {
+
+        showpDialog();
+        JsonArrayRequest req = new JsonArrayRequest(url,
+                new Response.Listener<JSONArray>()
+                {
+
+                    @Override
+                    public void onResponse(JSONArray response)
+                    {
+                        Log.d(TAG, response.toString());
+
+                        try {
+                            // Parsing json array response
+                            // loop through each json object
+
+                            for (int i = 0; i < response.length(); i++)
+                            {
+
+                                JSONObject vakken = (JSONObject) response
+                                        .get(i);
+
+                                String vak = vakken.getString(TAG_VAKNAAM);
+                                String ects = vakken.getString(TAG_ECTS);
+                                String grade = vakken.getString(TAG_GRADE);
+                                String period = vakken.getString(TAG_PERIOD);
+
+
+                                //zet ze in de de lijst
+                                courseModels.add(new Course(vak, ects, grade, period));
+                                Log.d("vaknaam ", vak);
+                                Log.d("aantal ects ", ects);
+                                Log.d("cijfer ", grade);
+                                Log.d("periode ", period);
+
+                            }
+
+                            mListView = (ListView) findViewById(R.id.showVakken);
+                            mAdapter = new com.imtpmd.sandor.imtpmdws.VakListAdapter(Invoer.this, 0, courseModels);
+                            mListView.setAdapter(mAdapter);
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                            Toast.makeText(getApplicationContext(),
+                                    "Error: " + e.getMessage(),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                        hidepDialog();
+
+                    }
+                }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d(TAG, "Error: " + error.getMessage());
+                Toast.makeText(getApplicationContext(),
+                        error.getMessage(), Toast.LENGTH_SHORT).show();
+                hidepDialog();
+            }
+        });
+
+        // Adding request to request queue
+        JSONcontroller.getInstance().addToRequestQueue(req);
+
+    }
+    private void showpDialog() {
+        if (!pDialog.isShowing())
+            pDialog.show();
+    }
+
+    private void hidepDialog() {
+        if (pDialog.isShowing())
+            pDialog.dismiss();
+    }
+
+
+
+
+
+
 
 
     @Override
@@ -115,4 +234,10 @@ public class Invoer extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
+
+
+
+
 }

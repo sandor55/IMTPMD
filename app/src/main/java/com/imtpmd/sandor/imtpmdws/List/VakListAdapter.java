@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.imtpmd.sandor.imtpmdws.Models.Course;
 import com.imtpmd.sandor.imtpmdws.R;
 
 import java.util.List;
@@ -28,8 +29,8 @@ public class VakListAdapter extends ArrayAdapter<Course> {
             vh = new ViewHolder();
             LayoutInflater li = LayoutInflater.from(getContext());
             convertView = li.inflate(R.layout.vak_list_item, parent, false);
-            vh.name = (TextView) convertView.findViewById(R.id.subject_name);
-            vh.code = (TextView) convertView.findViewById(R.id.subject_code);
+            vh.name = (TextView) convertView.findViewById(R.id.vakcode);
+            vh.code = (TextView) convertView.findViewById(R.id.ects);
             convertView.setTag(vh);
         } else {
             vh = (ViewHolder) convertView.getTag();
