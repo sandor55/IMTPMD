@@ -50,7 +50,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="period"
-        android:id="@+id/periode_getal"
+        android:id="@+id/vakperiode"
         android:layout_below="@+id/vakcode"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
@@ -66,5 +66,47 @@
         android:layout_alignRight="@+id/vakcode"
         android:layout_alignEnd="@+id/vakcode"
         android:layout_marginLeft="12dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:ems="10"
+        android:id="@+id/vakgrade"
+        android:layout_below="@+id/vakect"
+        android:layout_alignRight="@+id/vakect"
+        android:layout_alignEnd="@+id/vakect"
+        android:layout_alignLeft="@+id/vakcode"
+        android:layout_alignStart="@+id/vakcode" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Cijfer:"
+        android:id="@+id/textView2"
+        android:layout_alignTop="@+id/vakgrade"
+        android:layout_alignLeft="@+id/vak_tekst"
+        android:layout_alignStart="@+id/vak_tekst" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="opslaan"
+        android:id="@+id/opslaan"
+        android:layout_alignTop="@+id/annuleren"
+        android:layout_toRightOf="@+id/periode"
+        android:layout_toEndOf="@+id/periode"
+        android:onClick="opslaan" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="annuleren"
+        android:id="@+id/annuleren"
+        android:layout_below="@+id/vakgrade"
+        android:layout_toLeftOf="@+id/vakect"
+        android:layout_toStartOf="@+id/vakect"
+        android:onClick="annuleren" />
 
 </RelativeLayout>

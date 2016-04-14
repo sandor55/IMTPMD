@@ -8,12 +8,12 @@ import java.io.Serializable;
 public class Course implements Serializable {           // WAAROM serializable
 
     public String name;
-    public String ects;
-    public String grade;
-    public String period;
+    public int ects;
+    public double grade;
+    public int period;
 
 
-    public Course(String courseName, String ects, String grade, String period){
+                  public Course(String courseName, int ects, double grade, int period){
         this.name = courseName;
         this.ects = ects;
         this.grade = grade;

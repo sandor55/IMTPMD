@@ -30,20 +30,26 @@ public class VakListAdapter extends ArrayAdapter<Course> {
             LayoutInflater li = LayoutInflater.from(getContext());
             convertView = li.inflate(R.layout.vak_list_item, parent, false);
             vh.name = (TextView) convertView.findViewById(R.id.vakcode);
-            vh.code = (TextView) convertView.findViewById(R.id.ects);
+           vh.ects = (TextView) convertView.findViewById(R.id.ects);
+            vh.period = (TextView) convertView.findViewById(R.id.vakperiode);
+            vh.grade = (TextView) convertView.findViewById(R.id.grade);
             convertView.setTag(vh);
         } else {
             vh = (ViewHolder) convertView.getTag();
         }
         Course cm = getItem(position);
         vh.name.setText(cm.name);
-        vh.code.setText(cm.ects);
+        vh.ects.setText(String.valueOf(cm.ects));
+        vh.grade.setText(String.valueOf(cm.grade));
+        vh.period.setText(String.valueOf(cm.period));
         return convertView;
     }
 
     private static class ViewHolder {
         TextView name;
-        TextView code;
+        TextView ects;
+        TextView period;
+        TextView grade;
 
     }
 }
