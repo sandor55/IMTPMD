@@ -117,7 +117,8 @@ public class Invoer extends AppCompatActivity implements NavigationView.OnNaviga
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            Intent intent = new Intent (Invoer.this, Settings.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
@@ -146,8 +147,9 @@ public class Invoer extends AppCompatActivity implements NavigationView.OnNaviga
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-    public void ShowData()
-    {
+
+    public void ShowData() {
+
         DatabaseHelper dbHelper = DatabaseHelper.getHelper(this);
         //sortorder op periode
         String sortorder = DatabaseInfo.CourseColumn.PERIOD + " ASC";

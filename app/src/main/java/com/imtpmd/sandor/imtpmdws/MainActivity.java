@@ -96,8 +96,8 @@ public class MainActivity extends AppCompatActivity
         nogBehalen();
         this.nietbehaald = 60 - (studiepunten + nogbehalen);
         Log.d("studiepunten behaald", String.valueOf(studiepunten));
-        Log.d("niet behaald",String.valueOf(nietbehaald));
-        Log.d("nog  behaald",String.valueOf(nogbehalen));
+        Log.d("niet behaald", String.valueOf(nietbehaald));
+        Log.d("nog  behaald", String.valueOf(nogbehalen));
 
 
 
@@ -129,7 +129,8 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            Intent intent = new Intent (MainActivity.this, Settings.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
@@ -264,10 +265,7 @@ public class MainActivity extends AppCompatActivity
                 rs.moveToNext();
                 this.nogbehalen += ects;
             }
-
-
         }
-
     }
 
 
