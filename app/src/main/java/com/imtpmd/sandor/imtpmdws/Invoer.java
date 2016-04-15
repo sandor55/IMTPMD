@@ -149,7 +149,9 @@ public class Invoer extends AppCompatActivity implements NavigationView.OnNaviga
     public void ShowData()
     {
         DatabaseHelper dbHelper = DatabaseHelper.getHelper(this);
-        Cursor rs = dbHelper.query(DatabaseInfo.CourseTables.COURSE, projection, null, null, null, null, null);
+        //sortorder op periode
+        String sortorder = DatabaseInfo.CourseColumn.PERIOD + " ASC";
+        Cursor rs = dbHelper.query(DatabaseInfo.CourseTables.COURSE, projection, null, null, null, null, sortorder);
         //skip lege elementen die misschien eerst staan.
         rs.moveToFirst();
         if(rs.getCount() == 0)

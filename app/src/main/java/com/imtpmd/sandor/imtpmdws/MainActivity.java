@@ -52,9 +52,16 @@ public class MainActivity extends AppCompatActivity
     private String urlstring = "http://www.fuujokan.nl/subject_lijst.json";
     private static String TAG = MainActivity.class.getSimpleName();
 
-    //nodig voor het ophalen en inzetten in de database
-    private List<Course> courseModels = new ArrayList<>();   //data komt hierin
-
+    //nodig voor halen data
+    int huidigeperiode;
+    int studiepunten;
+    int nogbehalen;
+    int nietbehaald;
+    String TAG_VAK = "name";
+    String TAG_ECTS = "ects";
+    String TAG_GRADE = "grade";
+    String TAG_PERIOD = "period";
+    String[] projection = {DatabaseInfo.CourseColumn.NAME, DatabaseInfo.CourseColumn.ECTS, DatabaseInfo.CourseColumn.GRADE, DatabaseInfo.CourseColumn.PERIOD};
 
 
 
@@ -66,10 +73,9 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
 
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-            this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
@@ -77,42 +83,21 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
+
         //als niet gekoppeld aan internet geef melding
-        if(!isInternetAvailable())
-        {     Toast.makeText(this,
-                "geen connectie met internet",
-                Toast.LENGTH_LONG).show();
-        }
-
-
-
-        //check de datbase of er wat in staat.
-        DatabaseHelper dbHelper = DatabaseHelper.getHelper(this);
-        String[] projection = {DatabaseInfo.CourseColumn.NAME, DatabaseInfo.CourseColumn.NAME,DatabaseInfo.CourseColumn.ECTS, DatabaseInfo.CourseColumn.GRADE,DatabaseInfo.CourseColumn.PERIOD};
-        Cursor rs = dbHelper.query(DatabaseInfo.CourseTables.COURSE, projection, null, null, null, null, null);
-        //skip lege elementen die misschien eerst staan.
-        rs.moveToFirst();
-
-        //als er niks in database staat, en er wel internet is, haal data op
-        if(rs.getCount() == 0 && isInternetAvailable()) {
-            //als voor het ophalen van de data
-            pDialog = new ProgressDialog(this);
-            pDialog.setMessage("Data ophalen...");
-            pDialog.setCancelable(false);
-            //nodig voor het ophalen
-            maakDatabase();
-            requestQueue = Volley.newRequestQueue(getApplicationContext());
-        }
-        //geen internet en geen database
-        if(rs.getCount() ==0 && !isInternetAvailable())
-        {
+        if (!isInternetAvailable()) {
             Toast.makeText(this,
-                "kan geen database aanmaken, geen internet connectie",
-                Toast.LENGTH_LONG).show();
+                    "geen connectie met internet",
+                    Toast.LENGTH_LONG).show();
         }
-
-
-
+        huidigePeriode();
+        CheckDatabase();
+        showStudiepunten();
+        nogBehalen();
+        this.nietbehaald = 60 - (studiepunten + nogbehalen);
+        Log.d("studiepunten behaald", String.valueOf(studiepunten));
+        Log.d("niet behaald",String.valueOf(nietbehaald));
+        Log.d("nog  behaald",String.valueOf(nogbehalen));
 
 
 
@@ -183,56 +168,174 @@ public class MainActivity extends AppCompatActivity
 
 
     //maak database / eenmalig zodra er internet is
+
     /**
      * Method to make json array request where response starts with [
      */
-    public void maakDatabase()
+
+    private void huidigePeriode()
     {
+        //bereken huidige periode
+        Time today = new Time(Time.getCurrentTimezone());
+        today.setToNow();
+        int maand = today.month;
+        int dag = today.monthDay;
+        if(maand >=9 && (maand <= 11 && dag <= 9))
+        {
+            this.huidigeperiode = 1;
+        }
+        if((maand >=11 && dag >9) && (maand <= 2 && dag <= 8))
+        {
+            this.huidigeperiode = 2;
+        }
+        if((maand >=2 && dag > 7) && (maand <= 4 && dag <= 24));
+        {
+            this.huidigeperiode = 3;
+        }
+        if((maand >=4 && dag > 24)&& maand <= 9)
+        {
+            this.huidigeperiode = 4;
+        }
+        Log.d("huidige periode",String.valueOf(huidigeperiode));
+    }
+
+    public void showStudiepunten() {
+        int studiepunten = 0;
+
+        //where clausule
+        String selection = DatabaseInfo.CourseColumn.GRADE + ">= 5.5";
+        DatabaseHelper dbHelper = DatabaseHelper.getHelper(this);
+        Cursor rs = dbHelper.query(DatabaseInfo.CourseTables.COURSE, projection, selection, null, null, null, null);
+        //skip lege elementen die misschien eerst staan.
+        rs.moveToFirst();
+        if (rs.getCount() == 0) {
+            Toast.makeText(this,
+                    "geen database beschikbaar",
+                    Toast.LENGTH_LONG).show();
+        } else {
+            //gooi  het in een loop en lees ze stuk voor stk uit
+            for (int a = 0; a < rs.getCount(); a++) {
+                String vak = (String) rs.getString(rs.getColumnIndex(TAG_VAK));
+                int ects = (Integer) rs.getInt(rs.getColumnIndex(TAG_ECTS));
+                double grade = (Double) rs.getDouble(rs.getColumnIndex(TAG_GRADE));
+                int period = (Integer) rs.getInt(rs.getColumnIndex(TAG_PERIOD));
+                Log.d("vak", vak);
+                Log.d("ects", String.valueOf(ects));
+                Log.d("cijfer", String.valueOf(grade));
+                Log.d("periode", String.valueOf(period));
+                //add opgehaalde data in de model
+                //ga naar de volgende in de rij.
+                rs.moveToNext();
+                this.studiepunten += ects;
+            }
+
+
+        }
+
+        TextView test = (TextView) findViewById(R.id.studiepunten);
+
+        test.setText(String.valueOf(studiepunten));
+    }
+    public void nogBehalen() {
+        int studiepunten = 0;
+        String[] selectionargs = {String.valueOf(this.huidigeperiode),String.valueOf(0.0)};
+        String selection = DatabaseInfo.CourseColumn.PERIOD + ">=?" + " AND " + DatabaseInfo.CourseColumn.GRADE + "=?";
+        DatabaseHelper dbHelper = DatabaseHelper.getHelper(this);
+        Cursor rs = dbHelper.query(DatabaseInfo.CourseTables.COURSE, projection, selection, selectionargs, null, null, null);
+        //skip lege elementen die misschien eerst staan.
+        rs.moveToFirst();
+        if (rs.getCount() == 0) {
+            Toast.makeText(this,
+                    "geen database beschikbaar",
+                    Toast.LENGTH_LONG).show();
+        } else {
+            //gooi  het in een loop en lees ze stuk voor stk uit
+            for (int a = 0; a < rs.getCount(); a++) {
+                String vak = (String) rs.getString(rs.getColumnIndex(TAG_VAK));
+                int ects = (Integer) rs.getInt(rs.getColumnIndex(TAG_ECTS));
+                double grade = (Double) rs.getDouble(rs.getColumnIndex(TAG_GRADE));
+                int period = (Integer) rs.getInt(rs.getColumnIndex(TAG_PERIOD));
+                Log.d("vak", vak);
+                Log.d("ects", String.valueOf(ects));
+                Log.d("cijfer", String.valueOf(grade));
+                Log.d("periode", String.valueOf(period));
+                //add opgehaalde data in de model
+                //ga naar de volgende in de rij.
+                rs.moveToNext();
+                this.nogbehalen += ects;
+            }
+
+
+        }
+
+    }
+
+
+    public void CheckDatabase() {        //check de datbase of er wat in staat.
+        DatabaseHelper dbHelper = DatabaseHelper.getHelper(this);
+        String[] projection = {DatabaseInfo.CourseColumn.NAME, DatabaseInfo.CourseColumn.NAME, DatabaseInfo.CourseColumn.ECTS, DatabaseInfo.CourseColumn.GRADE, DatabaseInfo.CourseColumn.PERIOD};
+        Cursor rs = dbHelper.query(DatabaseInfo.CourseTables.COURSE, projection, null, null, null, null, null);
+        //skip lege elementen die misschien eerst staan.
+        rs.moveToFirst();
+
+        //als er niks in database staat, en er wel internet is, haal data op
+        if (rs.getCount() == 0 && isInternetAvailable()) {
+            //als voor het ophalen van de data
+            pDialog = new ProgressDialog(this);
+            pDialog.setMessage("Data ophalen...");
+            pDialog.setCancelable(false);
+            //nodig voor het ophalen
+            maakDatabase();
+            requestQueue = Volley.newRequestQueue(getApplicationContext());
+        }
+        //geen internet en geen database
+        if (rs.getCount() == 0 && !isInternetAvailable()) {
+            Toast.makeText(this,
+                    "kan geen database aanmaken, geen internet connectie",
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+    public void maakDatabase() {
         showpDialog();
 
 
         JsonArrayRequest req = new JsonArrayRequest(urlstring,
-                new Response.Listener<JSONArray>()
-                {
+                new Response.Listener<JSONArray>() {
 
                     @Override
-                    public void onResponse(JSONArray response)
-                    {
+                    public void onResponse(JSONArray response) {
                         Log.d(TAG, response.toString());
 
                         try {
                             // Parsing json array response
                             // loop through each json object
 
-                            for (int i = 0; i < response.length(); i++)
-                            {
+                            for (int i = 0; i < response.length(); i++) {
 
                                 JSONObject methode = (JSONObject) response
                                         .get(i);
 
                                 String vak = methode.getString("name");
                                 String holdects = methode.getString("ects");
-                                String holdgrade = methode.getString("grade");
+                                //String holdgrade = methode.getString("grade");
                                 String holdperiod = methode.getString("period");
                                 int ects = Integer.parseInt(holdects);
-                                double grade = Double.parseDouble(holdgrade);
+                                double grade = 0.0;
                                 int period = Integer.parseInt(holdperiod);
                                 DatabaseHelper dbHelper = DatabaseHelper.getHelper(getApplicationContext());
 
                                 //store values en schrijf weg ind e database
                                 ContentValues values = new ContentValues();
-                                values.put(DatabaseInfo.CourseColumn.NAME,vak);
+                                values.put(DatabaseInfo.CourseColumn.NAME, vak);
                                 values.put(DatabaseInfo.CourseColumn.ECTS, ects);
-                                values.put(DatabaseInfo.CourseColumn.GRADE,grade );
-                                values.put(DatabaseInfo.CourseColumn.PERIOD,period );
+                                values.put(DatabaseInfo.CourseColumn.GRADE, grade);
+                                values.put(DatabaseInfo.CourseColumn.PERIOD, period);
                                 dbHelper.insert(DatabaseInfo.CourseTables.COURSE, null, values);
 
                             }
 
 
-                        }
-                        catch (JSONException e)
-                        {
+                        } catch (JSONException e) {
                             e.printStackTrace();
                             Toast.makeText(getApplicationContext(),
                                     "Error: " + e.getMessage(),
@@ -241,11 +344,9 @@ public class MainActivity extends AppCompatActivity
                         hidepDialog();
 
                     }
-                }, new Response.ErrorListener()
-        {
+                }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError error)
-            {
+            public void onErrorResponse(VolleyError error) {
                 Log.d(TAG, "Error: " + error.getMessage());
                 Toast.makeText(getApplicationContext(),
                         error.getMessage(), Toast.LENGTH_SHORT).show();
@@ -256,6 +357,7 @@ public class MainActivity extends AppCompatActivity
         JSONcontroller.getInstance().addToRequestQueue(req);
 
     }
+
     private void showpDialog() {
         if (!pDialog.isShowing())
             pDialog.show();
@@ -265,6 +367,4 @@ public class MainActivity extends AppCompatActivity
         if (pDialog.isShowing())
             pDialog.dismiss();
     }
-
-
 }
