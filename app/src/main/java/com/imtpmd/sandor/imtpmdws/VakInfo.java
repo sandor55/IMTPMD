@@ -36,8 +36,7 @@ public class VakInfo extends AppCompatActivity {
     private double grade;
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.vak_info);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -46,6 +45,7 @@ public class VakInfo extends AppCompatActivity {
         //krijg de data
         Bundle bundle = getIntent().getExtras();
         name = bundle.getString(TAG_VAK);
+        Log.d("name",name);
         ect = bundle.getInt(TAG_ECTS);
         period = bundle.getInt(TAG_PERIOD);
         grade = bundle.getDouble(TAG_GRADE);
@@ -55,10 +55,21 @@ public class VakInfo extends AppCompatActivity {
         TextView vakect = (TextView) findViewById(R.id.vakect);
         TextView vakperiod = (TextView) findViewById(R.id.vakperiode);
         TextView vakgrade = (TextView) findViewById(R.id.vakgrade);
+        TextView vakkern = (TextView) findViewById(R.id.kernvak);
         vak.setText(name);
         vakect.setText(String.valueOf(ect));
         vakperiod.setText(String.valueOf(period));
         vakgrade.setText(String.valueOf(grade));
+        //als kernvak zet het op ja.
+        if(name.equals("IOPR1") ||name.equals("IOPR2") || name.equals("IRDB") || name.equals("INET") || name.equals("IIPXXXX"))
+        {
+            vakkern.setText("Ja");
+        } else
+        {
+            vakkern.setText("Nee");
+        }
+
+
     }
 
     public void annuleren(View v)
