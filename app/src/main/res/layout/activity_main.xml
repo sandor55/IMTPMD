@@ -40,6 +40,49 @@
         android:paddingTop="60dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Periode: "
+            android:paddingLeft="12dp"
+            android:id="@+id/textView5"
+            android:layout_below="@+id/textvak2"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="3"
+            android:id="@+id/periodeweergave"
+            android:layout_below="@+id/textvak2"
+            android:layout_toRightOf="@+id/textView5"
+            android:layout_alignRight="@+id/textvak2"
+            android:layout_alignEnd="@+id/textvak2" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="advies:"
+            android:paddingLeft="12dp"
+            android:id="@+id/textView6"
+            android:layout_below="@+id/textView5"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="advies komt hier"
+            android:id="@+id/adviesweergave"
+            android:layout_below="@+id/periodeweergave"
+            android:layout_toRightOf="@+id/textView6"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
     </RelativeLayout>
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"

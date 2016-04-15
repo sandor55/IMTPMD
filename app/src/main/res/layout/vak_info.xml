@@ -67,17 +67,7 @@
         android:layout_alignEnd="@+id/vakcode"
         android:layout_marginLeft="12dp" />
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="numberDecimal"
-        android:ems="10"
-        android:id="@+id/vakgrade"
-        android:layout_below="@+id/vakect"
-        android:layout_alignRight="@+id/vakect"
-        android:layout_alignEnd="@+id/vakect"
-        android:layout_alignLeft="@+id/vakcode"
-        android:layout_alignStart="@+id/vakcode" />
+
 
     <TextView
         android:layout_width="wrap_content"
@@ -85,10 +75,19 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Cijfer:"
         android:id="@+id/textView2"
-        android:layout_alignTop="@+id/vakgrade"
-        android:layout_alignLeft="@+id/vak_tekst"
-        android:layout_alignStart="@+id/vak_tekst" />
-
+        android:layout_below="@+id/textView4"
+        android:layout_alignLeft="@+id/textView4"
+        android:layout_alignStart="@+id/textView4" />
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:id="@+id/vakgrade"
+        android:layout_below="@+id/kernvak"
+        android:layout_alignRight="@+id/kernvak"
+        android:layout_alignEnd="@+id/kernvak"
+        android:layout_alignLeft="@+id/kernvak"
+        android:layout_alignStart="@+id/kernvak" />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -104,9 +103,29 @@
         android:layout_height="wrap_content"
         android:text="annuleren"
         android:id="@+id/annuleren"
+        android:onClick="annuleren"
         android:layout_below="@+id/vakgrade"
-        android:layout_toLeftOf="@+id/vakect"
-        android:layout_toStartOf="@+id/vakect"
-        android:onClick="annuleren" />
+        android:layout_toLeftOf="@+id/vakperiode"
+        android:layout_toStartOf="@+id/vakperiode" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Kernvak:"
+        android:id="@+id/textView4"
+        android:layout_below="@+id/vak_tekst"
+        android:layout_alignLeft="@+id/vak_tekst"
+        android:layout_alignStart="@+id/vak_tekst" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="kern"
+        android:id="@+id/kernvak"
+        android:layout_below="@+id/vakect"
+        android:layout_alignRight="@+id/vakect"
+        android:layout_alignEnd="@+id/vakect" />
 
 </RelativeLayout>

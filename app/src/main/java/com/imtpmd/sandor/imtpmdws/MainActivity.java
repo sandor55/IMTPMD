@@ -57,6 +57,8 @@ public class MainActivity extends AppCompatActivity
     int studiepunten;
     int nogbehalen;
     int nietbehaald;
+    int kerngehaald = 0;
+    int kernhalen = 4 - huidigeperiode+1;//huidige periode kan je er namelijk ook 1 halen
     String TAG_VAK = "name";
     String TAG_ECTS = "ects";
     String TAG_GRADE = "grade";
@@ -94,10 +96,14 @@ public class MainActivity extends AppCompatActivity
         CheckDatabase();
         showStudiepunten();
         nogBehalen();
+
         this.nietbehaald = 60 - (studiepunten + nogbehalen);
         Log.d("studiepunten behaald", String.valueOf(studiepunten));
         Log.d("niet behaald",String.valueOf(nietbehaald));
-        Log.d("nog  behaald",String.valueOf(nogbehalen));
+        Log.d("nog  behaald", String.valueOf(nogbehalen));
+        kernVakken();
+        showAdvies();
+
 
 
 
@@ -197,10 +203,12 @@ public class MainActivity extends AppCompatActivity
             this.huidigeperiode = 4;
         }
         Log.d("huidige periode",String.valueOf(huidigeperiode));
+        TextView vak = (TextView) findViewById(R.id.periodeweergave);
+        vak.setText(String.valueOf(this.huidigeperiode));
     }
 
     public void showStudiepunten() {
-        int studiepunten = 0;
+
 
         //where clausule
         String selection = DatabaseInfo.CourseColumn.GRADE + ">= 5.5";
@@ -209,9 +217,7 @@ public class MainActivity extends AppCompatActivity
         //skip lege elementen die misschien eerst staan.
         rs.moveToFirst();
         if (rs.getCount() == 0) {
-            Toast.makeText(this,
-                    "geen database beschikbaar",
-                    Toast.LENGTH_LONG).show();
+            //doe niks als er geen database is
         } else {
             //gooi  het in een loop en lees ze stuk voor stk uit
             for (int a = 0; a < rs.getCount(); a++) {
@@ -219,11 +225,6 @@ public class MainActivity extends AppCompatActivity
                 int ects = (Integer) rs.getInt(rs.getColumnIndex(TAG_ECTS));
                 double grade = (Double) rs.getDouble(rs.getColumnIndex(TAG_GRADE));
                 int period = (Integer) rs.getInt(rs.getColumnIndex(TAG_PERIOD));
-                Log.d("vak", vak);
-                Log.d("ects", String.valueOf(ects));
-                Log.d("cijfer", String.valueOf(grade));
-                Log.d("periode", String.valueOf(period));
-                //add opgehaalde data in de model
                 //ga naar de volgende in de rij.
                 rs.moveToNext();
                 this.studiepunten += ects;
@@ -234,10 +235,10 @@ public class MainActivity extends AppCompatActivity
 
         TextView test = (TextView) findViewById(R.id.studiepunten);
 
-        test.setText(String.valueOf(studiepunten));
+        test.setText(String.valueOf(this.studiepunten));
     }
     public void nogBehalen() {
-        int studiepunten = 0;
+
         String[] selectionargs = {String.valueOf(this.huidigeperiode),String.valueOf(0.0)};
         String selection = DatabaseInfo.CourseColumn.PERIOD + ">=?" + " AND " + DatabaseInfo.CourseColumn.GRADE + "=?";
         DatabaseHelper dbHelper = DatabaseHelper.getHelper(this);
@@ -245,23 +246,16 @@ public class MainActivity extends AppCompatActivity
         //skip lege elementen die misschien eerst staan.
         rs.moveToFirst();
         if (rs.getCount() == 0) {
-            Toast.makeText(this,
-                    "geen database beschikbaar",
-                    Toast.LENGTH_LONG).show();
+            //doe niks
         } else {
             //gooi  het in een loop en lees ze stuk voor stk uit
             for (int a = 0; a < rs.getCount(); a++) {
-                String vak = (String) rs.getString(rs.getColumnIndex(TAG_VAK));
                 int ects = (Integer) rs.getInt(rs.getColumnIndex(TAG_ECTS));
-                double grade = (Double) rs.getDouble(rs.getColumnIndex(TAG_GRADE));
-                int period = (Integer) rs.getInt(rs.getColumnIndex(TAG_PERIOD));
-                Log.d("vak", vak);
-                Log.d("ects", String.valueOf(ects));
-                Log.d("cijfer", String.valueOf(grade));
-                Log.d("periode", String.valueOf(period));
-                //add opgehaalde data in de model
+
                 //ga naar de volgende in de rij.
                 rs.moveToNext();
+
+                //tel de ects op
                 this.nogbehalen += ects;
             }
 
@@ -269,7 +263,34 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
+    public void kernVakken() {
 
+        String[] selectionargs = {String.valueOf(this.huidigeperiode)};
+        String selection = DatabaseInfo.CourseColumn.PERIOD + "<=?" + " AND " + DatabaseInfo.CourseColumn.GRADE + ">=5.5";
+        Log.d("selection",selection);
+        DatabaseHelper dbHelper = DatabaseHelper.getHelper(this);
+        Cursor rs = dbHelper.query(DatabaseInfo.CourseTables.COURSE, projection, selection, selectionargs, null, null, null);
+        //skip lege elementen die misschien eerst staan.
+        rs.moveToFirst();
+        if (rs.getCount() == 0) {
+            //doe niks
+        } else {
+            //gooi  het in een loop en lees ze stuk voor stk uit
+            for (int a = 0; a < rs.getCount(); a++) {
+                String vak = (String) rs.getString(rs.getColumnIndex(TAG_VAK));
+                double grade = (Double) rs.getDouble(rs.getColumnIndex(TAG_GRADE));
+                if((vak.equals("IOPR1") || vak.equals("IOPR2") || vak.equals("IRDB") || vak.equals("INET") && grade > 5.5))
+                {
+                    this.kerngehaald += 1;
+                }
+                        rs.moveToNext();
+            }
+            Log.d("kernvakken",String.valueOf(kerngehaald));
+
+
+        }
+
+    }
 
     public void CheckDatabase() {        //check de datbase of er wat in staat.
         DatabaseHelper dbHelper = DatabaseHelper.getHelper(this);
@@ -295,6 +316,40 @@ public class MainActivity extends AppCompatActivity
                     Toast.LENGTH_LONG).show();
         }
     }
+
+    public void showAdvies()
+    {
+        String advies = "";
+        TextView adviestext = (TextView) findViewById(R.id.adviesweergave);
+        //minder dan 40 studiepunten of geen kernvakken meer mogelijk om te halen
+        if((studiepunten + nogbehalen < 40) || (kernhalen + kerngehaald < 2))
+        {
+            advies = " Negatief, Je kan het jaar niet meer halen. Tekort studiepunten of te weinig kernvakken.";
+        }
+        if((studiepunten + nogbehalen > 40) && (studiepunten + nogbehalen <50) && (kerngehaald < 2) )
+        {
+            int halen = 2 - kerngehaald;
+        advies = "Waarschuwing, Je kan het jaar halen met maximaal tussen de 40-50 ECTS." + " Maar je moet nog " + String.valueOf(halen) + " kernvak(ken) halen." ;
+        }
+        if((studiepunten + nogbehalen >40) && (studiepunten + nogbehalen <50) && (kerngehaald >= 2))
+        {
+
+            advies = "Waarschuwing, Je kan het jaar halen met maximaal tussen de 40-50 ECTS." + " Maar je hebt wel al " + String.valueOf(kerngehaald) + " kernvakken gehaald." ;
+        }
+        if((studiepunten + nogbehalen >50)  && (kerngehaald < 2))
+        {
+
+            int halen = 2 - kerngehaald;
+            advies = "Je kan het jaar halen met 50+ studiepunten." + " Maar je moet nog " + String.valueOf(halen) + " kernvak(ken) halen." ;
+        }adviestext.setText(advies);
+        if((studiepunten + nogbehalen >50)  && (kerngehaald >= 2))
+        {
+            advies = "Je kan het jaar halen met 50+ studiepunten." + " En je hebt " + String.valueOf(kerngehaald) + " kernvakken gehaald." ;
+        }adviestext.setText(advies);
+
+
+
+    }
     public void maakDatabase() {
         showpDialog();
 
@@ -317,9 +372,9 @@ public class MainActivity extends AppCompatActivity
 
                                 String vak = methode.getString("name");
                                 String holdects = methode.getString("ects");
-                                //String holdgrade = methode.getString("grade");
                                 String holdperiod = methode.getString("period");
                                 int ects = Integer.parseInt(holdects);
+                                //cijfer wordt standaard 0. niet ingevuld.
                                 double grade = 0.0;
                                 int period = Integer.parseInt(holdperiod);
                                 DatabaseHelper dbHelper = DatabaseHelper.getHelper(getApplicationContext());
