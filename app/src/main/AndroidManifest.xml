@@ -47,7 +47,13 @@
     </activity>
         <activity
             android:name=".VakInfo"
-            android:label="vak informatie"
+            android:label="Vak informatie"
+            android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
+
+        <activity
+            android:name=".Settings"
+            android:label="Settings"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
 
