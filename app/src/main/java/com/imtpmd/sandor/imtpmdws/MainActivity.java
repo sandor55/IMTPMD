@@ -99,16 +99,11 @@ public class MainActivity extends AppCompatActivity
 
         this.nietbehaald = 60 - (studiepunten + nogbehalen);
         Log.d("studiepunten behaald", String.valueOf(studiepunten));
-<<<<<<< HEAD
-        Log.d("niet behaald", String.valueOf(nietbehaald));
-        Log.d("nog  behaald", String.valueOf(nogbehalen));
-=======
         Log.d("niet behaald",String.valueOf(nietbehaald));
         Log.d("nog  behaald", String.valueOf(nogbehalen));
         kernVakken();
         showAdvies();
 
->>>>>>> sandorbouw
 
 
 
@@ -140,8 +135,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Intent intent = new Intent (MainActivity.this, Settings.class);
-            startActivity(intent);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -264,7 +258,10 @@ public class MainActivity extends AppCompatActivity
                 //tel de ects op
                 this.nogbehalen += ects;
             }
+
+
         }
+
     }
     public void kernVakken() {
 
