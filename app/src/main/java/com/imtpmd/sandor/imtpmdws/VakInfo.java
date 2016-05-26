@@ -60,7 +60,6 @@ public class VakInfo extends AppCompatActivity implements NavigationView.OnNavig
         //krijg de data
         Bundle bundle = getIntent().getExtras();
         name = bundle.getString(TAG_VAK);
-        Log.d("name",name);
         ect = bundle.getInt(TAG_ECTS);
         period = bundle.getInt(TAG_PERIOD);
         grade = bundle.getDouble(TAG_GRADE);
@@ -112,7 +111,7 @@ public class VakInfo extends AppCompatActivity implements NavigationView.OnNavig
         //store values en schrijf weg ind e database
         EditText cijfer = (EditText) findViewById(R.id.vakgrade);
         double nieuwecijfer = Double.parseDouble(cijfer.getText().toString());
-        Log.d("cijfer",String.valueOf(nieuwecijfer));
+
 
         //name hoeft eigenlijk niet meegegeven te worden
         ContentValues values = new ContentValues();
@@ -121,7 +120,7 @@ public class VakInfo extends AppCompatActivity implements NavigationView.OnNavig
         values.put(DatabaseInfo.CourseColumn.GRADE, nieuwecijfer);
         values.put(DatabaseInfo.CourseColumn.PERIOD,period );
 
-        Log.d("vaknaam" , name);
+
          //update de tabel waar name gelijk is aan de name in de tabelnaam
         String[] args = {name};
        db.update(DatabaseInfo.CourseTables.COURSE,values,DatabaseInfo.CourseColumn.NAME + "=?" ,args);

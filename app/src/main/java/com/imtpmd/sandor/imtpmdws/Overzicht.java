@@ -67,15 +67,14 @@ public class Overzicht extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
+        //laad de informatie voor alels
         huidigePeriode();
         CheckDatabase();
         showStudiepunten();
         nogBehalen();
+        //zet het niet behaalde aantal punten
         this.nietbehaald = 60 - (studiepunten + nogbehalen);
-        Log.d("studiepunten behaald", String.valueOf(studiepunten));
-        Log.d("niet behaald", String.valueOf(nietbehaald));
-        Log.d("nog  behaald", String.valueOf(nogbehalen));
+
 
         mainLayout = (RelativeLayout) findViewById(R.id.mainLayout);
         mChart = new PieChart(this);
@@ -124,7 +123,7 @@ public class Overzicht extends AppCompatActivity
         {
             this.huidigeperiode = 4;
         }
-        Log.d("huidige periode",String.valueOf(huidigeperiode));
+
     }
 
     public void showStudiepunten() {
@@ -147,10 +146,6 @@ public class Overzicht extends AppCompatActivity
                 int ects = (Integer) rs.getInt(rs.getColumnIndex(TAG_ECTS));
                 double grade = (Double) rs.getDouble(rs.getColumnIndex(TAG_GRADE));
                 int period = (Integer) rs.getInt(rs.getColumnIndex(TAG_PERIOD));
-                Log.d("vak", vak);
-                Log.d("ects", String.valueOf(ects));
-                Log.d("cijfer", String.valueOf(grade));
-                Log.d("periode", String.valueOf(period));
                 //add opgehaalde data in de model
                 //ga naar de volgende in de rij.
                 rs.moveToNext();
@@ -178,10 +173,6 @@ public class Overzicht extends AppCompatActivity
                 int ects = (Integer) rs.getInt(rs.getColumnIndex(TAG_ECTS));
                 double grade = (Double) rs.getDouble(rs.getColumnIndex(TAG_GRADE));
                 int period = (Integer) rs.getInt(rs.getColumnIndex(TAG_PERIOD));
-                Log.d("vak", vak);
-                Log.d("ects", String.valueOf(ects));
-                Log.d("cijfer", String.valueOf(grade));
-                Log.d("periode", String.valueOf(period));
                 //add opgehaalde data in de model
                 //ga naar de volgende in de rij.
                 rs.moveToNext();
@@ -190,7 +181,8 @@ public class Overzicht extends AppCompatActivity
         }
     }
 
-    public void CheckDatabase() {        //check de datbase of er wat in staat.
+    public void CheckDatabase() {
+        //check de datbase of er wat in staat.
         DatabaseHelper dbHelper = DatabaseHelper.getHelper(this);
         String[] projection = {DatabaseInfo.CourseColumn.NAME, DatabaseInfo.CourseColumn.NAME, DatabaseInfo.CourseColumn.ECTS, DatabaseInfo.CourseColumn.GRADE, DatabaseInfo.CourseColumn.PERIOD};
         Cursor rs = dbHelper.query(DatabaseInfo.CourseTables.COURSE, projection, null, null, null, null, null);

@@ -75,10 +75,7 @@ public class Invoer extends AppCompatActivity implements NavigationView.OnNaviga
                     int ects = data.ects;
                     double grade = data.grade;
                     int period = data.period;
-                    Log.d("vaknaam",name);
-                    Log.d("ects",String.valueOf(ects));
-                    Log.d("cijfer",String.valueOf(grade));
-                    Log.d("periode",String.valueOf(period));
+                //stuur data door van het aangeklikte item
                 Intent i = new Intent(getApplicationContext(), VakInfo.class);
                     i.putExtra(TAG_VAK,name);
                     i.putExtra(TAG_ECTS,ects);
@@ -168,10 +165,7 @@ public class Invoer extends AppCompatActivity implements NavigationView.OnNaviga
                 int ects = (Integer) rs.getInt(rs.getColumnIndex(TAG_ECTS));
                 double grade = (Double) rs.getDouble(rs.getColumnIndex(TAG_GRADE));
                 int period = (Integer) rs.getInt(rs.getColumnIndex(TAG_PERIOD));
-                Log.d("vak",  vak);
-                Log.d("ects", String.valueOf(ects));
-                Log.d("cijfer", String.valueOf(grade));
-                Log.d("periode", String.valueOf(period));
+
                 //add opgehaalde data in de model
                 courseModel.add(new Course(vak, ects,grade, period));
 

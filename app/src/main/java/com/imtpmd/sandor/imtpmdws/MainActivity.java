@@ -92,15 +92,19 @@ public class MainActivity extends AppCompatActivity
                     "geen connectie met internet",
                     Toast.LENGTH_LONG).show();
         }
+
+        //haal de huidige periode op
         huidigePeriode();
+
+        //check database
         CheckDatabase();
+
+        //laat het aantal studiepunten zien
         showStudiepunten();
         nogBehalen();
-
+        //geef niet behaald aan van het aantal studiepunten
         this.nietbehaald = 60 - (studiepunten + nogbehalen);
-        Log.d("studiepunten behaald", String.valueOf(studiepunten));
-        Log.d("niet behaald",String.valueOf(nietbehaald));
-        Log.d("nog  behaald", String.valueOf(nogbehalen));
+
         kernVakken();
         showAdvies();
 
@@ -203,7 +207,7 @@ public class MainActivity extends AppCompatActivity
         {
             this.huidigeperiode = 4;
         }
-        Log.d("huidige periode",String.valueOf(huidigeperiode));
+        //zet de tekst van de huidige periode
         TextView vak = (TextView) findViewById(R.id.periodeweergave);
         vak.setText(String.valueOf(this.huidigeperiode));
     }
@@ -265,10 +269,10 @@ public class MainActivity extends AppCompatActivity
 
     }
     public void kernVakken() {
-
+        //lees database door op vakken en of het gehaald is
         String[] selectionargs = {String.valueOf(this.huidigeperiode)};
         String selection = DatabaseInfo.CourseColumn.PERIOD + "<=?" + " AND " + DatabaseInfo.CourseColumn.GRADE + ">=5.5";
-        Log.d("selection",selection);
+
         DatabaseHelper dbHelper = DatabaseHelper.getHelper(this);
         Cursor rs = dbHelper.query(DatabaseInfo.CourseTables.COURSE, projection, selection, selectionargs, null, null, null);
         //skip lege elementen die misschien eerst staan.
@@ -280,13 +284,14 @@ public class MainActivity extends AppCompatActivity
             for (int a = 0; a < rs.getCount(); a++) {
                 String vak = (String) rs.getString(rs.getColumnIndex(TAG_VAK));
                 double grade = (Double) rs.getDouble(rs.getColumnIndex(TAG_GRADE));
+                //als een van deze vakken hoger is dan 5,5 zet dan dat een kernvak is gehaald
                 if((vak.equals("IOPR1") || vak.equals("IOPR2") || vak.equals("IRDB") || vak.equals("INET") && grade > 5.5))
                 {
                     this.kerngehaald += 1;
                 }
                         rs.moveToNext();
             }
-            Log.d("kernvakken",String.valueOf(kerngehaald));
+
 
 
         }
@@ -320,6 +325,7 @@ public class MainActivity extends AppCompatActivity
 
     public void showAdvies()
     {
+        //zet het advies aan de hand van de behaalde dingen
         String advies = "";
         TextView adviestext = (TextView) findViewById(R.id.adviesweergave);
         //minder dan 40 studiepunten of geen kernvakken meer mogelijk om te halen
